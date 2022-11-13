@@ -42,6 +42,7 @@ const (
 	activityIDTagKey = "temporalActivityID"
 )
 
+// note[mincong]: here is the tracing interceptor
 // Tracer is an interface for tracing implementations as used by
 // NewTracingInterceptor. Most callers do not use this directly, but rather use
 // the opentracing or opentelemetry packages.
