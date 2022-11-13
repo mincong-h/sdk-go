@@ -70,6 +70,7 @@ var (
 
 type (
 	// WorkflowClient is the client for starting a workflow execution.
+	// note[mincong]: workflow client is here
 	WorkflowClient struct {
 		workflowService          workflowservice.WorkflowServiceClient
 		conn                     *grpc.ClientConn
@@ -190,6 +191,8 @@ type (
 	}
 )
 
+// note[mincong]: here we start a workflow execution, but the actual exectuion is delegated to the interceptor
+//
 // ExecuteWorkflow starts a workflow execution and returns a WorkflowRun that will allow you to wait until this workflow
 // reaches the end state, such as workflow finished successfully or timeout.
 // The user can use this to start using a functor like below and get the workflow execution result, as EncodedValue
@@ -1235,6 +1238,7 @@ func serializeSearchAttributes(input map[string]interface{}) (*commonpb.SearchAt
 	return &commonpb.SearchAttributes{IndexedFields: attr}, nil
 }
 
+// note[mincong]: workflow client interceptor wraps the workflow client
 type workflowClientInterceptor struct{ client *WorkflowClient }
 
 func (w *workflowClientInterceptor) ExecuteWorkflow(

@@ -65,6 +65,9 @@ type (
 	Options = internal.ClientOptions
 
 	// ConnectionOptions are optional parameters that can be specified in ClientOptions
+	//
+	// note[mincong]: we redefine the type here, why? Is it served as an alias, where users can
+	// import the package "client" instead of the package "internal"?
 	ConnectionOptions = internal.ConnectionOptions
 
 	// StartWorkflowOptions configuration parameters for starting a workflow execution.

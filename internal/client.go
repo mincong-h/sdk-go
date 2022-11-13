@@ -442,6 +442,11 @@ type (
 	}
 
 	// ConnectionOptions is provided by SDK consumers to control optional connection params.
+	//
+	// Note[mincong]: this structure contains different options for the connection, including
+	// different timeout, different dial options for gRPC connections (interfaces). There are also
+	// some package-private options (disableEagerConnection, excludeInternalFromRetry) for internal
+	// usage.
 	ConnectionOptions struct {
 		// TLS configures connection level security credentials.
 		TLS *tls.Config
