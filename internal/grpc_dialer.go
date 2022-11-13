@@ -71,6 +71,8 @@ const (
 )
 
 func dial(params dialParameters) (*grpc.ClientConn, error) {
+	// note[mincong]: this class converts different Temporal-specific dialParameters into the gRPC
+	// parameters.
 	var securityOptions []grpc.DialOption
 	if params.UserConnectionOptions.TLS != nil {
 		securityOptions = []grpc.DialOption{
@@ -88,6 +90,7 @@ func dial(params dialParameters) (*grpc.ClientConn, error) {
 		maxPayloadSize = params.UserConnectionOptions.MaxPayloadSize
 	}
 
+	// note[mincong]: include this section in the blog post
 	// gRPC maintains connection pool inside grpc.ClientConn.
 	// This connection pool has auto reconnect feature.
 	// If connection goes down, gRPC will try to reconnect using exponential backoff strategy:
@@ -99,8 +102,36 @@ func dial(params dialParameters) (*grpc.ClientConn, error) {
 		MinConnectTimeout: minConnectTimeout,
 	}
 	cp.Backoff.BaseDelay = retryPollOperationInitialInterval
-	cp.Backoff.MaxDelay = retryPollOperationMaxInterval
+	cp.Backoff.MaxDelay = retryPollOperationMaxInterval // override the maxDelay because the default is too high (120s)
 	opts := []grpc.DialOption{
+		// Unary RPC
+		//
+		// First consider the simplest type of RPC where the client sends a single request and gets back a single response.
+		//
+		//   1. Once the client calls a stub method, the server is notified that the RPC has been
+		//      invoked with the client’s metadata for this call, the method name, and the specified
+		//      deadline if applicable.
+		//   2. The server can then either send back its own initial metadata (which must be sent
+		//      before any response) straight away, or wait for the client’s request message. Which
+		//      happens first, is application-specific.
+		//   3. Once the server has the client’s request message, it does whatever work is necessary
+		//      to create and populate a response. The response is then returned (if successful) to
+		//      the client together with status details (status code and optional status message)
+		//      and optional trailing metadata.
+		//   4. If the response status is OK, then the client gets the response, which completes
+		//      the call on the client side.
+		//
+		// See https://grpc.io/docs/what-is-grpc/core-concepts/#unary-rpc
+		//
+		// There are different types of interceptors:
+		//        | Server                    | Client                    |
+		// ------ | ------------------------- | ------------------------- |
+		// Unary  | Server Unary Interceptor  | Client Unary Interceptor  |
+		// Stream | Server Stream Interceptor | Client Stream Interceptor |
+		//
+		// Examples use cases: tracing, authorisation, adding metadata.
+		//
+		// See https://edgehog.blog/a-guide-to-grpc-and-interceptors-265c306d3773
 		grpc.WithChainUnaryInterceptor(params.RequiredInterceptors...),
 		grpc.WithDefaultServiceConfig(params.DefaultServiceConfig),
 		grpc.WithConnectParams(cp),
