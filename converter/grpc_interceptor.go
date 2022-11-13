@@ -924,6 +924,7 @@ func (s *serviceInterceptor) process(encode bool, objs ...interface{}) error {
 				return err
 			}
 
+		// note[mincong] Here we process the header, input, and memo (?) object o
 		case *workflowpb.NewWorkflowExecutionInfo:
 			if o == nil {
 				continue
