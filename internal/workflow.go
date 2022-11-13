@@ -495,6 +495,7 @@ func (wc *workflowEnvironmentInterceptor) HandleQuery(ctx Context, in *HandleQue
 	return handler.execute(in.Args)
 }
 
+// note[mincong]: here we execute the workflow with the workflow input
 func (wc *workflowEnvironmentInterceptor) ExecuteWorkflow(ctx Context, in *ExecuteWorkflowInput) (interface{}, error) {
 	// Remove header from the context
 	ctx = workflowContextWithoutHeader(ctx)
