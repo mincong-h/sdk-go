@@ -32,6 +32,9 @@ import (
 
 	"google.golang.org/grpc"
 
+	// note[mincong]: the proto files are imported from "go.temporal.io/api/{type}/{version}"
+	// built by https://github.com/temporalio/api-go, which generates Go files from Temporal api repository
+	// https://github.com/temporalio/api
 	batchpb "go.temporal.io/api/batch/v1"
 	commandpb "go.temporal.io/api/command/v1"
 	commonpb "go.temporal.io/api/common/v1"
