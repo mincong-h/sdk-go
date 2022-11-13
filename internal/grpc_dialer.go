@@ -125,6 +125,9 @@ func dial(params dialParameters) (*grpc.ClientConn, error) {
 	// Append any user-supplied options
 	opts = append(opts, params.UserConnectionOptions.DialOptions...)
 
+	// note[mincong]: here, we open a new gRPC connection (*grpc.ClientConn), with the server address
+	// (params.HostPort) and the dial options configured. The server address looks like
+	// "example.com:9090", without the protocol prefix.
 	return grpc.Dial(params.HostPort, opts...)
 }
 
